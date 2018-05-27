@@ -1,4 +1,4 @@
-/*package com.example.ilysh.myapplication;
+package com.example.ilysh.myapplication;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,30 +8,36 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
-public class GameView extends View {
+
+public class GameView extends View{
 
     private Sprite player;
-    private Sprite roofs;
+    private Sprite roof;
+
 
     private int viewWidth;
     private int viewHeight;
 
     private int points = 0;
-    private int bestScore = 0;
+
 
     private final int timerInterval = 30;
 
     public GameView(Context context) {
         super(context);
 
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.player);
+        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.playerninja);
+
+        // TODO поменяй спрайт
+
         int w = b.getWidth()/5;
-        int h = b.getHeight()/3;
+        int h = b.getHeight()/1;
+
         Rect firstFrame = new Rect(0, 0, w, h);
+        /*
         player = new Sprite(10, 0, 0, 100, firstFrame, b);
 
         for (int i = 0; i < 3; i++) {
@@ -46,12 +52,30 @@ public class GameView extends View {
             }
         }
 
-        b = BitmapFactory.decodeResource(getResources(), R.drawable.settings);
+        */
+
+        //если что вверху оригинал
+        player = new Sprite(10, 100, 0, 100, firstFrame, b);
+
+        for (int i = 0; i < 1; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (i ==0 && j == 0) {
+                    continue;
+                }
+                if (i ==0 && j == 4) {
+                    continue;
+                }
+                player.addFrame(new Rect(j*w, i*h, j*w+w, i*w+w));
+            }
+        }
+
+
+        b = BitmapFactory.decodeResource(getResources(), R.drawable.buttontohome);
         w = b.getWidth()/5;
         h = b.getHeight()/3;
         firstFrame = new Rect(4*w, 0, 5*w, h);
 
-        roofs = new Sprite(2000, 250, -300, 0, firstFrame, b);
+        roof = new Sprite(2000, 250, -300, 0, firstFrame, b);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 4; j >= 0; j--) {
@@ -64,7 +88,7 @@ public class GameView extends View {
                     continue;
                 }
 
-                roofs.addFrame(new Rect(j*w, i*h, j*w+w, i*w+w));
+                roof.addFrame(new Rect(j*w, i*h, j*w+w, i*w+w));
             }
         }
 
@@ -85,9 +109,11 @@ public class GameView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawARGB(250, 127, 199, 255);
+        //canvas.drawARGB(250, 127, 199, 255);
+        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.playerninja);
+        canvas.drawBitmap(b, 0, 0, null);
         player.draw(canvas);
-        roofs.draw(canvas);
+        roof.draw(canvas);
 
         Paint p = new Paint();
         p.setAntiAlias(true);
@@ -96,9 +122,10 @@ public class GameView extends View {
         canvas.drawText(points + "", viewWidth - 200, 70, p);
     }
 
+    /*
     protected void update () {
         player.update(timerInterval);
-        roofs.update(timerInterval);
+        roof.update(timerInterval);
 
         if (player.getY() + player.getFrameHeight() > viewHeight) {
             player.setY(viewHeight - player.getFrameHeight());
@@ -111,16 +138,31 @@ public class GameView extends View {
             points--;
         }
 
-        if (roofs.getX() < - roofs.getFrameWidth()) {
+        if (roof.getX() < - roof.getFrameWidth()) {
             teleportEnemy();
             points +=10;
         }
 
-        if (roofs.intersect(player)) {
+        if (roof.intersect(player)) {
             teleportEnemy ();
             points -= 40;
         }
 
+
+        invalidate();
+    }
+    */
+
+    //если что оригинал сверху
+
+    protected void update () {
+        player.update(timerInterval);
+        roof.update(timerInterval);
+
+        if (roof.intersect(player)) {
+            teleportRoof ();
+            points += 1;
+        }
 
         invalidate();
     }
@@ -145,9 +187,9 @@ public class GameView extends View {
     }
 
 
-    private void teleportEnemy () {
-        roofs.setX(viewWidth + Math.random() * 500);
-        roofs.setY(Math.random() * (viewHeight - roofs.getFrameHeight()));
+    private void teleportRoof () {
+        roof.setX(viewWidth + Math.random() * 500);
+        roof.setY(Math.random() * (viewHeight - roof.getFrameHeight()));
     }
 
     class Timer extends CountDownTimer {
@@ -168,129 +210,3 @@ public class GameView extends View {
         }
     }
 }
-*/
-
-
-
-
-
-
-
-
-//сверху если что
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class GameView extends SurfaceView {
-
-    //Обработка косания по экрану
-    public boolean onTouchEvent(MotionEvent event) {
-        for (int i = sprites.size()-1; i >= 0; i--)
-        {
-            Sprite sprite = sprites.get(i);
-            if (sprite.isCollition(event.getX(),event.getY()))
-            {
-                sprites.remove(sprite);
-            }
-        }
-        return super.onTouchEvent(event);
-    }
-
-    private List<Sprite> sprites = new ArrayList<Sprite>();
-
-    sprites.add(createSprite(R.drawable.playerninja));
-    sprites.add(createSprite(R.drawable.someone));
-
-    private Sprite createSprite(int resouce) {
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), resouce);
-        return new Sprite(this,bmp);
-    }
-
-
-    //Загружаем спрайт
-    private Bitmap bmp;
-
-    //Поле рисования
-    private SurfaceHolder holder;
-
-    //объект класса GameView
-    private GameManager gameLoopThread;
-
-    //Объект класса Sprite
-    private Sprite sprite;
-
-    //Конструктор
-    public GameView(Context context)
-    {
-        super(context);
-        gameLoopThread = new GameManager(this);
-        holder = getHolder();
-
-        //Рисуем все наши объекты и все все все
-        holder.addCallback(new SurfaceHolder.Callback()
-        {
-            // Уничтожение области рисования
-            public void surfaceDestroyed(SurfaceHolder holder)
-            {
-                boolean retry = true;
-                gameLoopThread.setRunning(false);
-                while (retry)
-                {
-                    try
-                    {
-                        gameLoopThread.join();
-                        retry = false;
-                    } catch (InterruptedException e)
-                    {
-                    }
-                }
-            }
-
-            // Создание области рисования
-            public void surfaceCreated(SurfaceHolder holder) {
-                createSprites();
-                gameLoopThread.setRunning(true);
-                gameLoopThread.start();
-            }
-
-            // Изменение области рисования /
-            public void surfaceChanged(SurfaceHolder holder, int format,
-                                       int width, int height)
-            {
-            }
-        });
-        bmp = BitmapFactory.decodeResource(getResources(), R.drawable.playerninja);
-        sprite = new Sprite(this,bmp);
-    }
-
-    //Функция рисующая все спрайты и фон
-    protected void onDraw(Canvas canvas)
-    {
-        for(Sprite sprite : sprites) {
-            sprite.onDraw(canvas);
-        }
-    }
-}
-*/

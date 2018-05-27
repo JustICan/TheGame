@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 public class Settings extends AppCompatActivity implements CompoundButton.OnCheckedChangeListener {
 
-    MediaPlayer mediaPlayer;
-
     Switch switchMusic;
     Button buttonToHome;
 
@@ -40,20 +38,17 @@ public class Settings extends AppCompatActivity implements CompoundButton.OnChec
         if (switchMusic != null) {
             switchMusic.setOnCheckedChangeListener(this);
         }
+
     }
+
 
 
     @Override
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (b == true){
-            if (mediaPlayer == null){
-                mediaPlayer=MediaPlayer.create(this, R.raw.music);
-            }
-            mediaPlayer.start();
-        } else if (b == false) {
-            if (mediaPlayer != null){
-                mediaPlayer.pause();
-            }
+        if (b){
+            ((TheGameApplication)getApplication()).mediaPlayer.start();
+        } else {
+            ((TheGameApplication)getApplication()).mediaPlayer.pause();
         }
     }
 }
